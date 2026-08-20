@@ -2,8 +2,14 @@
 import pico from 'picocolors'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { execSync } from 'node:child_process'
 
-const msgPath = path.resolve('.git/COMMIT_EDITMSG')
+// resolve the actual git dir so this also works in linked worktrees,
+// where .git is a file pointing at .git/worktrees/<name>
+const gitDir = execSync('git rev-parse --git-dir', {
+  encoding: 'utf-8',
+}).trim()
+const msgPath = path.resolve(gitDir, 'COMMIT_EDITMSG')
 const msg = readFileSync(msgPath, 'utf-8').trim()
 
 const commitRE =
